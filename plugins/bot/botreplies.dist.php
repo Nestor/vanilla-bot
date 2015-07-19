@@ -4,8 +4,8 @@
  * 1) Rename this file to botreplies.php and move it to your conf folder.
  * 2) Use the examples below to create your own bot reply functions. Return a string (on trigger) or FALSE.
  * 3) Set Plugins.ShwaipBot.ReplyOrder to an array of the function names, in order of precedence.
- *    Default: $Configuration['Plugins']['ShwaipBot']['ReplyOrder'] = array('BotShave', 'BotMuffinMan', 'BotSendBeer');
- *    If someone says something that triggers multiple replies, only the first will fire.
+ *     Default: $Configuration['Plugins']['ShwaipBot']['ReplyOrder'] = array('BotShave', 'BotMuffinMan', 'BotSendBeer');
+ *     If someone says something that triggers multiple replies, only the first will fire.
  */
 
 /**
@@ -15,8 +15,8 @@
  * Bot: TWO BITS!
  */
 function BotShave($Bot) {
-   if ($Bot->SimpleMatch('shave and a hair cut'))
-      return $Bot->Mention().' TWO BITS!';
+    if ($Bot->SimpleMatch('shave and a hair cut'))
+        return $Bot->Mention().' TWO BITS!';
 }
 
 /**
@@ -30,15 +30,15 @@ function BotShave($Bot) {
  * Bot: THE. SAME.
  */
 function BotMuffinMan($Bot) {
-   if ($Bot->SimpleMatch('muffin man')) {
-      $MuffinReply = ' Do you know the muffin man?';
-      if ($Bot->SimpleMatch('muffin man?'))
-         $MuffinReply = ' THE MUFFIN MAN.'.$MuffinReply;
-      return $Bot->Mention().$MuffinReply;
-   }
-   elseif($Bot->SimpleMatch('who lives on drury lane')) {
-      return $Bot->Mention().' THE. SAME.';
-   }
+    if ($Bot->SimpleMatch('muffin man')) {
+        $MuffinReply = ' Do you know the muffin man?';
+        if ($Bot->SimpleMatch('muffin man?'))
+            $MuffinReply = ' THE MUFFIN MAN.'.$MuffinReply;
+        return $Bot->Mention().$MuffinReply;
+    }
+    elseif($Bot->SimpleMatch('who lives on drury lane')) {
+        return $Bot->Mention().' THE. SAME.';
+    }
 }
 
 /**
@@ -48,6 +48,6 @@ function BotMuffinMan($Bot) {
  * Bot:  /me slides @Lincoln a beer.
  */
 function BotSendBeer($Bot) {
-   if ($Bot->PatternMatch('(^|[\s,\.>])\!beer\s@(\w{1,50})\b', $BeerWho))
-      return '/me slides @'.GetValue(2, $BeerWho).' a beer.';
+    if ($Bot->PatternMatch('(^|[\s,\.>])\!beer\s@(\w{1,50})\b', $BeerWho))
+        return '/me slides @'.GetValue(2, $BeerWho).' a beer.';
 }
