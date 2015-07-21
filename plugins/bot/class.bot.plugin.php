@@ -1,7 +1,10 @@
 <?php
 /**
- * Share what you come up with on vanillaforums.org!
+ * @copyright 2015 Lincoln Russell
+ * @license GNU GPL2
+ * @package Bot
  */
+
 $PluginInfo['bot'] = array(
 	'Name' => 'Bot',
 	'Description' => 'Program your bot to reply to catch phrases and special conditions.',
@@ -13,6 +16,9 @@ $PluginInfo['bot'] = array(
     'License' => 'GNU GPL2'
 );
 
+/**
+ * Share what you come up with on vanillaforums.org!
+ */
 class BotPlugin extends Gdn_Plugin {
 	/**
 	 * Bot replies to new comments.
@@ -23,23 +29,45 @@ class BotPlugin extends Gdn_Plugin {
             $Bot = new Bot();
             $Bot->setDiscussion(val('Discussion', $Args));
             $Bot->setUser(userBuilder($Comment, 'Insert'));
-            $Bot->evaluateReplyTo(val('Body', $Comment));
+            $this->evaluateReplies(val('Body', $Comment));
             $Bot->say();
         }
 	}
 
-    /**
-     * Set default replies.
+	/**
+     * Figure out something clever to say.
      */
-    public function structure() {
-        if (!c('Bot.Priority'))
-            saveToConfig('Bot.Priority', array('BotShave', 'BotMuffinMan', 'BotSendBeer'));
+    public function evaluateReplies($body) {
+        $this->body = $body;
+
+        // Gdn::get('bot.replies');
+
+        //fire events here
+        // while ($result == false) {
+        // $result = $bot->trigger('name');
+
+        foreach ($priority as $replyName) {
+            if (!function_exists($replyName)) {
+                continue;
+            }
+            if ($this->reply = $replyName($this)) {
+                break;
+            }
+        }
     }
 
     /**
-     * Setup.
+     * No setup.
      */
     public function setup() {
-        $this->structure();
+
     }
+}
+
+/**
+ * @param $name
+ * @param $priority
+ */
+function botReply($name, $priority) {
+
 }

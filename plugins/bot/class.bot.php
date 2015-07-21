@@ -1,21 +1,32 @@
 <?php
+/**
+ * @copyright 2015 Lincoln Russell
+ * @license GNU GPL2
+ * @package Bot
+ */
 
+/**
+ * Class Bot
+ */
 class Bot extends Gdn_Plugin {
 
     /** @var array Discussion we're in. */
-    public $discussion = array();
+    protected $discussion = array();
 
     /** @var array User who triggered this mess. */
-    public $user = array();
+    protected $user = array();
 
     /** @var int Our loveable bot's UserID. */
     protected $botID = 0;
 
     /** @var string What was said? */
-    public $body = '';
+    protected $body = '';
+
+    /** @var string What triggered this? */
+    protected $context = 'comment';
 
     /** @var string What do we say back? */
-    public $reply = false;
+    protected $reply = false;
 
     /**
      * First positions.
@@ -25,26 +36,30 @@ class Bot extends Gdn_Plugin {
     }
 
     /**
-     * Who are we talking to?
+     * Fire an (reply) event from the Bot context.
+     *
+     * @param $name
      */
-    public function setUser($user) {
-        $this->user = (array) $user;
+    public function fireReply($name) {
+        $this->fireEvent($name);
     }
 
     /**
      * Formatted mention of user we're interacting with.
      *
-     * @return Mention of the Instigator.
+     * @return Mention of the user who triggered this.
      */
     public function mention() {
-        return '@'.val('Name', $this->Instigator);
+        return '@'.val('Name', $this->user);
     }
 
     /**
-     * Where are we & who are we talking to?
+     * Do a regex match on the body.
+     *
+     * @return bool Whether trigger text matches $Pattern.
      */
-    public function setDiscussion($discussion) {
-        $this->discussion = (array) $discussion;
+    public function regex($pattern, &$matches = array()) {
+        return (preg_match('/'.$pattern.'/i', $this->body, $matches));
     }
 
     /**
@@ -55,7 +70,7 @@ class Bot extends Gdn_Plugin {
             $commentModel = new CommentModel();
             $botComment = array(
                 'DiscussionID' => val('DiscussionID', $this->discussion),
-                'InsertUserID' => $this->BotID,
+                'InsertUserID' => $this->botID,
                 'Body' => $this->reply
             );
             $commentModel->save($botComment);
@@ -63,39 +78,48 @@ class Bot extends Gdn_Plugin {
     }
 
     /**
-     * Figure out something clever to say.
+     * What was said?
      */
-    public function evaluateReplyTo($body) {
-        $this->body = $body;
-        $priority = c('Bot.Priority');
-        if (!is_array($priority))
-            return;
+    public function setBody($body) {
+        $this->body = (string) $body;
+    }
 
-
-        //fire events here
-
-
-        foreach ($priority as $replyName) {
-            if (!function_exists($replyName)) {
-                continue;
-            }
-            if ($this->reply = $replyName($this)) {
-                break;
-            }
+    /**
+     * What was said?
+     */
+    public function setContext($context) {
+        if (in_array($context, array('discussion', 'comment'))) { //, 'wallpost', 'wallcomment'
+            $this->context = $context;
         }
     }
 
     /**
-     * @return bool Whether trigger text contains $Text.
+     * Where are we & who are we talking to?
      */
-    public function simpleMatch($text) {
-        return (strpos(strtolower($this->body), $text) !== false);
+    public function setDiscussion($discussion) {
+        $this->discussion = (array) $discussion;
     }
 
     /**
-     * @return bool Whether trigger text matches $Pattern.
+     * What are we gonna say?
      */
-    public function patternMatch($pattern, &$matches = array()) {
-        return (preg_match('/'.$pattern.'/i', $this->body, $matches));
+    public function setReply($reply) {
+        $this->reply = (string) $reply;
+    }
+
+    /**
+     * Who are we talking to?
+     */
+    public function setUser($user) {
+        $this->user = (array) $user;
+    }
+
+    /**
+     * Do a simple text match on the body.
+     *
+     * @return bool Whether trigger text contains $Text.
+     */
+    public function match($text) {
+        return (strpos(strtolower($this->body), $text) !== false);
     }
 }
