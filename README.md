@@ -6,17 +6,35 @@ More fun than sock puppet accounts, Bot is a tool for kickstarting a new communi
 
 Bot has customizable triggers that allow it to participate and take actions in your community as a (bot) member.
 
+Bot is best used by experienced Vanilla plugin developers. This guide assumes you understand event handling in Vanilla well.
+
 ## Using Bot
 
-You assign a priority order for events. After any event handler returns `true`, the rest are skipped (essentially a `break` for the event firing after a post). Generally this indicates the bot (i.e. that handler) has posted a comment. By returning `true`, you prevent multiple bot posts in a row.
+You assign a priority order for possible replies. After any event handler sets a reply on Bot, the rest are skipped. By setting the reply to `true` you can prevent _any_ reply being made.
 
 In your `structure()` method, set your replies with their priority level:
 
-`botReply($eventName, $priority = 100);`
+`botReply($eventName, $priority);`
 
-If no priority is given, they are prioritized in the order they are set.
+Lowest number goes first. Ties may go in any order. If no priority is given, they are prioritized in the order they are set by your plugin. If multiple plugins set unprioritized replies, there may be unpredictable results (plugins may load in any order).
 
-Events are thrown by the Bot object. Therefore in your plugin, event handlers for Bot are given the bot instance as `$sender`. All the relevant contextual data is available as properties of the bot.
+Events are thrown by the `Bot` object. Therefore in your plugin, event handlers for Bot are given the bot instance as `$sender` (the first argument). All the relevant contextual data is available as properties of the bot.
+
+## Replying with Bot
+
+When deciding whether to respond to a particular post, you have some tools available to you via the `Bot` object passed to your event handler:
+
+* `match($text)` returns `true` or `false` whether the body of the post contains the exact `$text`.
+* `regex($pattern, $matches)` returns `true` or `false` whether the body of the post contains the regex `$pattern`. Matches are passed back via `$matches`. See `preg_match()`.
+
+When it's time to reply, just use `setReply($string)`. All further reply events are skipped. First reply is best reply.
+
+There's some data & convenience formatting available to you when crafting your reply:
+
+* `mention()` returns a string of an `@` prepended to the username of the author of the triggering post.
+
+Your reply handler should return a fully formatted string of the post you want the bot to reply with. By defaut, Bot expects Markdown. You can change this with `format($newFormat)`.
+
 
 ## Design considerations
 
@@ -30,7 +48,7 @@ Events are thrown by the Bot object. Therefore in your plugin, event handlers fo
 <?php
 $PluginInfo['shwaipbot'] = array(
    'Name' => 'shwaipbot',
-   'Description' => "Example bot usage",
+   'Description' => "Example implementation of Bot.",
    'Version' => '1.0',
    'RequiredApplications' => array('Vanilla' => '2.2'),
    'RequiredPlugins' => array('Bot' => '1.0'),
@@ -39,6 +57,7 @@ $PluginInfo['shwaipbot'] = array(
 );
 
 class ShwaipbotPlugin extends Gdn_Plugin {
+
     /**
      * Simple call and response.
      *
@@ -46,8 +65,8 @@ class ShwaipbotPlugin extends Gdn_Plugin {
      * Bot: TWO BITS!
      */
     public function bot_shave_handler($bot) {
-        if ($bot->simpleMatch('shave and a hair cut')) {
-            return $bot->mention().' TWO BITS!';
+        if ($bot->match('shave and a hair cut')) {
+            $bot->setReply($bot->mention().' TWO BITS!');
         }
     }
 
@@ -58,8 +77,8 @@ class ShwaipbotPlugin extends Gdn_Plugin {
      * Bot:  /me slides @Lincoln a beer.
      */
     public function bot_sendBeer_handler($bot) {
-        if ($bot->patternMatch('(^|[\s,\.>])\!beer\s@(\w{1,50})\b', $beerTo)) {
-            return '/me slides @'.val(2, $beerTo).' a beer.';
+        if ($bot->pattern('(^|[\s,\.>])\!beer\s@(\w{1,50})\b', $beerTo)) {
+            $bot->setReply('/me slides @'.val(2, $beerTo).' a beer.');
         }
     }
     
