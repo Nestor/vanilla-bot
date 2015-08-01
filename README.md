@@ -4,9 +4,9 @@ Sometimes you want a [minion](https://github.com/vanilla/minion) to do your dirt
 
 More fun than sock puppet accounts, Bot is a tool for kickstarting a new community or bringing an old one together with a shared experience and knowledge.
 
-Bot has customizable triggers that allow it to participate and take actions in your community as a (bot) member.
+Bot has customizable triggers that allow it to participate and take actions in your community as a (bot) member. 
 
-Bot is best used by experienced Vanilla plugin developers. This guide assumes you understand event handling in Vanilla well.
+**Bot is for experienced Vanilla plugin developers.** It is a framework for building a clean bot implementation. On its own it doesn't do much of anything. It certainly is not plugin-and-play for non-developers. This guide assumes you understand event handling in Vanilla well.
 
 ## Using Bot
 
@@ -42,6 +42,7 @@ Your reply handler should return a fully formatted string of the post you want t
 * Create unique event names so they do not overlap with other plugins.
 * Multiple replies may have the same priority. They will be triggered in the order declared, which may be random between plugins.
 * Add `'RequiredPlugins' => array('bot' => '1.0'),` to your plugin info.
+* Call `botReplyDisable($name)` for all your replies in your plugin's `onDisable()` to prevent unnecessary event throwing.
 
 ## Example plugin using Bot
 
