@@ -7,12 +7,12 @@
 
 $PluginInfo['bot'] = array(
 	'Name' => 'Bot',
-	'Description' => 'Program your bot to reply to catch phrases and special conditions.',
-	'Version' 	=>	 '1.0',
-	'MobileFriendly' => TRUE,
-	'Author' 	=>	 "Lincoln Russell",
+	'Description' => 'Program your own bot to reply to catch phrases and special conditions.',
+	'Version' 	=> '1.0',
+	'MobileFriendly' => true,
+	'Author' => "Lincoln Russell",
 	'AuthorEmail' => 'lincoln@icrontic.com',
-	'AuthorUrl' =>	 'http://lincolnwebs.com',
+	'AuthorUrl' => 'http://lincolnwebs.com',
     'License' => 'GNU GPL2'
 );
 
@@ -81,6 +81,7 @@ class BotPlugin extends Gdn_Plugin {
     public function setup() { }
 }
 
+if (!function_exists('botReply')) :
 /**
  * Add a reply to the call stack.
  *
@@ -103,7 +104,9 @@ function botReply($eventName, $priority = false) {
     // Gdn::set('bot.replies.'.$eventName, $priority); // This is bugged. #2923
     Gdn::userModel()->setMeta(0, array($eventName => $priority), 'bot.replies.');
 }
+endif;
 
+if (!function_exists('botReplyDisable')) :
 /**
  * Unregister a reply event.
  *
@@ -112,3 +115,4 @@ function botReply($eventName, $priority = false) {
 function botReplyDisable($eventName) {
     Gdn::set('bot.replies.'.$eventName, null);
 }
+endif;
