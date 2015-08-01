@@ -58,14 +58,12 @@ class BotPlugin extends Gdn_Plugin {
      */
     public function doReplies($bot) {
         // Get all replies that have been registered.
-        $replies = Gdn::get('bot.replies.%');
+        //$replies = Gdn::get('bot.replies.%'); // This is bugged.
+        $replies = Gdn::userModel()->getMeta(0, 'bot.replies.%', 'bot.replies.');
         asort($replies);
 
         // Process all possible replies.
-        foreach ($replies as $metaName => $priority) {
-            // Extract function name from the key.
-            $eventName = str_replace('bot.replies.', '', $metaName);
-
+        foreach ($replies as $eventName => $priority) {
             // Call bot event handler.
             $bot->fireReply($eventName);
 
@@ -91,18 +89,26 @@ class BotPlugin extends Gdn_Plugin {
  */
 function botReply($eventName, $priority = false) {
     // If no priority is set, automatically increment it in the order received.
-    static $defaultPriority;
-    if (!isset($defaultPriority)) {
-        $defaultPriority = 0;
-    }
+    static $defaultPriority = 0;
     if (!$priority) {
         // Next consecutive priority.
-        $priority = $defaultPriority++;
+        $defaultPriority++;
+        $priority = $defaultPriority;
     } elseif ($priority > $defaultPriority) {
         // Fast forward our default so that it will be highest existing priority +1.
         $defaultPriority = $priority;
     }
 
     // Register our reply.
-    Gdn::set('bot.replies.'.$eventName, $priority);
+    // Gdn::set('bot.replies.'.$eventName, $priority); // This is bugged. #2923
+    Gdn::userModel()->setMeta(0, array($eventName => $priority), 'bot.replies.');
+}
+
+/**
+ * Unregister a reply event.
+ *
+ * @param $eventName
+ */
+function botReplyDisable($eventName) {
+    Gdn::set('bot.replies.'.$eventName, null);
 }

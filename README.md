@@ -41,6 +41,7 @@ Your reply handler should return a fully formatted string of the post you want t
 * All reply events are fired on every new post until a `true` is returned by one of them. Complex conditions or computations on a busy site could overburden your server.
 * Create unique event names so they do not overlap with other plugins.
 * Multiple replies may have the same priority. They will be triggered in the order declared, which may be random between plugins.
+* Add `'RequiredPlugins' => array('bot' => '1.0'),` to your plugin info.
 
 ## Example plugin using Bot
 

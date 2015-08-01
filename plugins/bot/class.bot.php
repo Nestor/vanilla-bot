@@ -35,6 +35,7 @@ class Bot extends Gdn_Plugin {
      * First positions.
      */
     public function __construct() {
+        parent::__construct();
         $this->botID = c('Bot.UserID', Gdn::userModel()->getSystemUserID());
     }
 
@@ -76,6 +77,7 @@ class Bot extends Gdn_Plugin {
             $botComment = array(
                 'DiscussionID' => val('DiscussionID', $this->discussion),
                 'InsertUserID' => $this->botID,
+                'Format' => $this->format,
                 'Body' => $this->reply
             );
             $commentModel->save($botComment);
@@ -84,6 +86,9 @@ class Bot extends Gdn_Plugin {
 
     /**
      * What was said?
+     *
+     * @param string $body Set the post body for reference (optional).
+     * @return Content of post that triggered this.
      */
     public function body($body = '') {
         if ($body != '') {
@@ -112,7 +117,7 @@ class Bot extends Gdn_Plugin {
      * @return array Discussion data.
      */
     public function discussion($discussion = array()) {
-        if (is_array($discussion) && count($discussion)) {
+        if ((is_array($discussion) || is_object($discussion)) && count($discussion)) {
             $this->discussion = (array) $discussion;
         }
         return $this->discussion;
@@ -158,7 +163,7 @@ class Bot extends Gdn_Plugin {
      * @return array User info.
      */
     public function user($user = array()) {
-        if (is_array($user) && count($user)) {
+        if ((is_array($user) || is_object($user)) && count($user)) {
             $this->user = (array) $user;
         }
         return $this->user;
