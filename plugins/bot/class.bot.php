@@ -90,7 +90,7 @@ class Bot extends Gdn_Plugin {
      * @param string $body Set the post body for reference (optional).
      * @return Content of post that triggered this.
      */
-    public function body($body = '') {
+    public function body($body = '', $format = '') {
         if ($body != '') {
             $this->body = (string) $body;
         }

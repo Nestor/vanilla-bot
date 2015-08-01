@@ -10,6 +10,8 @@ Bot has customizable triggers that allow it to participate and take actions in y
 
 ## Using Bot
 
+First, register your (potential) replies. Each reply gets an event name that will be fired like a normal Vanilla event.
+
 You assign a priority order for possible replies. After any event handler sets a reply on Bot, the rest are skipped. By setting the reply to `true` you can prevent _any_ reply being made.
 
 In your `structure()` method, set your replies with their priority level:
@@ -18,11 +20,22 @@ In your `structure()` method, set your replies with their priority level:
 
 Lowest number goes first. Ties may go in any order. If no priority is given, they are prioritized in the order they are set by your plugin. If multiple plugins set unprioritized replies, there may be unpredictable results (plugins may load in any order).
 
-Events are thrown by the `Bot` object. Therefore in your plugin, event handlers for Bot are given the bot instance as `$sender` (the first argument). All the relevant contextual data is available as properties of the bot.
+Events are thrown by the `Bot` object. Therefore in your plugin, event handlers for Bot are given the bot instance as `$sender` (the first argument). So you'll be writing event handlers like this:
+
+`public function bot_eventName_handler($bot) { ... }`
+
+You can get additional data from the `$bot` (just `$sender` by another name) by calling its methods:
+
+* `user()` provides the triggering user's data.
+* `discussion()` provides the triggering discussion's data.
+* `context()` will tell you if you're in a comment or discussion.
+* `body()` gives the full text of the triggering post if you need it.
+
+Because of the convenience methods available, many times you won't need the above info at all.
 
 ## Replying with Bot
 
-When deciding whether to respond to a particular post, you have some tools available to you via the `Bot` object passed to your event handler:
+When deciding whether to respond to a particular post, you have some helpful methods available to you via the `Bot` object passed to your event handler:
 
 * `match($text)` returns `true` or `false` whether the body of the post contains the exact `$text`.
 * `regex($pattern, $matches)` returns `true` or `false` whether the body of the post contains the regex `$pattern`. Matches are passed back via `$matches`. See `preg_match()`.
@@ -43,6 +56,7 @@ Your reply handler should return a fully formatted string of the post you want t
 * Multiple replies may have the same priority. They will be triggered in the order declared, which may be random between plugins.
 * Add `'RequiredPlugins' => array('bot' => '1.0'),` to your plugin info.
 * Call `botReplyDisable($name)` for all your replies in your plugin's `onDisable()` to prevent unnecessary event throwing.
+* You can use `setReply(true)` to say nothing and skip all further reply events.
 
 ## Example plugin using Bot
 
