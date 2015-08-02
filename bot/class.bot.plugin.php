@@ -8,7 +8,7 @@
 $PluginInfo['bot'] = array(
 	'Name' => 'Bot',
 	'Description' => 'Program your own bot to reply to catch phrases and special conditions.',
-	'Version' 	=> '1.0',
+	'Version' 	=> '1.0.1',
 	'MobileFriendly' => true,
 	'Author' => "Lincoln Russell",
 	'AuthorEmail' => 'lincoln@icrontic.com',
@@ -65,7 +65,7 @@ class BotPlugin extends Gdn_Plugin {
         // Process all possible replies.
         foreach ($replies as $eventName => $priority) {
             // Call bot event handler.
-            $bot->fireReply($eventName);
+            $bot->fireEvent($eventName);
 
             // If that event set a reply, let's move on.
             if ($bot->hasReply()) {

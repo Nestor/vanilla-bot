@@ -40,15 +40,6 @@ class Bot extends Gdn_Plugin {
     }
 
     /**
-     * Fire an (reply) event from the Bot context.
-     *
-     * @param $name
-     */
-    public function fireReply($name) {
-        $this->fireEvent($name);
-    }
-
-    /**
      * Formatted mention of user we're interacting with.
      *
      * @return Mention of the user who triggered this.
@@ -82,6 +73,7 @@ class Bot extends Gdn_Plugin {
             );
             $commentModel->save($botComment);
         }
+        $this->fireEvent('afterSay');
     }
 
     /**
