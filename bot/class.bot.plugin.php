@@ -8,7 +8,7 @@
 $PluginInfo['bot'] = array(
 	'Name' => 'Bot',
 	'Description' => 'Program your own bot to reply to catch phrases and special conditions.',
-	'Version' 	=> '1.0.1',
+	'Version' 	=> '1.1',
 	'MobileFriendly' => true,
 	'Author' => "Lincoln Russell",
 	'AuthorEmail' => 'lincoln@icrontic.com',

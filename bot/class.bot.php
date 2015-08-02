@@ -86,7 +86,20 @@ class Bot extends Gdn_Plugin {
         if ($body != '') {
             $this->body = (string) $body;
         }
-        return $body;
+        return $this->body;
+    }
+
+    /**
+     * What's the userid of our bot?
+     *
+     * @param string $body Set the botid (optional).
+     * @return int Current botid.
+     */
+    public function botID($botID = '') {
+        if ($botID != '') {
+            $this->botID = (string) $botID;
+        }
+        return $this->botID;
     }
 
     /**
@@ -99,7 +112,7 @@ class Bot extends Gdn_Plugin {
         if (in_array($context, array('discussion', 'comment'))) { //, 'wallpost', 'wallcomment'
             $this->context = $context;
         }
-        return $context;
+        return $this->context;
     }
 
     /**
@@ -125,7 +138,7 @@ class Bot extends Gdn_Plugin {
         if ($format != '') {
             $this->format = $format;
         }
-        return $format;
+        return $this->format;
     }
 
     /**
