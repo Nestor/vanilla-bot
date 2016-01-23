@@ -181,6 +181,6 @@ class Bot extends Gdn_Plugin {
      * @return bool Whether trigger text contains $Text.
      */
     public function match($text) {
-        return (strpos(strtolower($this->body), $text) !== false);
+        return (strpos(strtolower($this->body), strtolower($text)) !== false);
     }
 }
