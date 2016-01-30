@@ -1,5 +1,7 @@
 <?php
 /**
+ * Share what you come up with on vanillaforums.org!
+ *
  * @copyright 2015 Lincoln Russell
  * @license GNU GPL2
  * @package Bot
@@ -16,8 +18,9 @@ $PluginInfo['bot'] = array(
     'License' => 'GNU GPL2'
 );
 
+
 /**
- * Share what you come up with on vanillaforums.org!
+ * Controls where the Bot hooks into Vanilla.
  */
 class BotPlugin extends Gdn_Plugin {
 
@@ -56,6 +59,50 @@ class BotPlugin extends Gdn_Plugin {
             $this->doReplies($bot);
         }
 	}
+
+	/**
+     * Hook into the asyncronous analytics tick event to create a virtual cron job.
+     *
+     * Requires that memcached is installed with PHP and is configured & enabled in Vanilla.
+     * Fires events from Bot object named 'minute', 'hourly', and 'daily'.
+     * These events do not actually work like clockwork. They may fire slightly less than their designated frequency.
+     * Sites with low traffic may experience unpredictably longer timeframes since a visit is required to trigger these.
+     *
+     * @param Gdn_Statistics $sender
+     */
+    public function gdn_statistics_analyticsTick_handler($sender) {
+        // This only works if you're using caching.
+        if (!Gdn_Cache::activeEnabled()) {
+            return;
+        }
+
+        // Use cache layer to get a verified lock on firing this event.
+        $locked = Gdn::cache()->get('bot.cron.lock', [Gdn_Cache::FEATURE_LOCAL => false]);
+        if (!$locked) {
+            $key = uniqid();
+            Gdn::cache()->store('bot.cron.lock', $key, [Gdn_Cache::FEATURE_EXPIRY => 60]);
+            $locked = Gdn::cache()->get('bot.cron.lock', [Gdn_Cache::FEATURE_LOCAL => false]);
+            if ($locked == $key) {
+                // Fire our base once-per-minute event.
+                $bot = new Bot();
+                $bot->fireEvent('minute');
+
+                // Is it time for daily or hourly events?
+                $counter = Gdn::cache()->get('bot.cron.counter', [Gdn_Cache::FEATURE_LOCAL => false]);
+                $counter = ($counter) ? $counter+1 : 1;
+                if ($counter % 60 == 0) {
+                    $bot->fireEvent('hourly');
+                    if ($counter % 3600 == 0) {
+                        $bot->fireEvent('daily');
+                        $counter = 0; // Daily reset.
+                    }
+                }
+
+                // Store updated counter.
+                Gdn::cache()->store('bot.cron.counter', $counter, [Gdn_Cache::FEATURE_EXPIRY => false]);
+            }
+        }
+    }
 
 	/**
      * Figure out something clever to say.
