@@ -10,7 +10,7 @@
 $PluginInfo['bot'] = array(
     'Name' => 'Bot',
     'Description' => 'Program your own bot to reply to catch phrases and special conditions.',
-    'Version' => '1.2',
+    'Version' => '1.3',
     'MobileFriendly' => true,
     'Author' => "Lincoln Russell",
     'AuthorEmail' => 'lincoln@icrontic.com',
@@ -99,7 +99,7 @@ class BotPlugin extends Gdn_Plugin {
                 }
 
                 // Store updated counter.
-                Gdn::cache()->store('bot.cron.counter', $counter, [Gdn_Cache::FEATURE_EXPIRY => false]);
+                Gdn::cache()->store('bot.cron.counter', $counter);
             }
         }
     }
