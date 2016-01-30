@@ -57,6 +57,16 @@ Bot has a few second-tier capabilities as of 1.2.
 * `online()` will make your bot user appear online (if you're also using the [Who's Online](https://vanillaforums.org/addon/whosonline-plugin) plugin).
 * Some commands are now chainable: `$bot->setState()->setReply()->say()->online();`
 
+## Timed events
+
+Bot learned how to tell time in 1.3.
+
+* Caching is required to use timed events (e.g. memcached).
+* Bot now fires events named `minute`, `hourly`, and `daily` at the expected intervals.
+* These represent approximate, squishy intervals. It does not run like a clock; they will be delayed a bit.
+* Timed events require site traffic to fire. Therefore the level of delay will depend on your level of site traffic (higher = more accurate).
+* Example hook: `bot_hourly_handler($sender) { /* stuff */ }`
+
 ## Design considerations
 
 * All reply events are fired on every new post until a `true` is returned by one of them. Complex conditions or computations on a busy site could overburden your server.
