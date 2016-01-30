@@ -15,7 +15,8 @@ $PluginInfo['bot'] = array(
     'Author' => "Lincoln Russell",
     'AuthorEmail' => 'lincoln@icrontic.com',
     'AuthorUrl' => 'http://lincolnwebs.com',
-    'License' => 'GNU GPL2'
+    'License' => 'GNU GPL2',
+    'GitHub' => 'linc/vanilla-bot'
 );
 
 
