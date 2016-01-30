@@ -232,8 +232,8 @@ class Bot extends Gdn_Plugin {
      * @return Bot
      */
     public function setState($event, $value = null, $userid = 0) {
-        $event = substr(strolower($event), 0, 50);
-        Gdn::userModel()->setMeta($userid, array($event => $value), 'bot.state.');
+        $event = substr(strtolower($event), 0, 50);
+        UserModel::setMeta($userid, array($event => $value), 'bot.state.');
         return $this;
     }
 
@@ -246,8 +246,9 @@ class Bot extends Gdn_Plugin {
      * @return int|string|bool
      */
     public function state($event, $default = null, $userid = 0) {
-        $event = substr(strolower($event), 0, 50);
-        return Gdn::userModel()->getMeta($userid, $event, 'bot.state.', $default);
+        $event = substr(strtolower($event), 0, 50);
+        $meta = UserModel::getMeta($userid, 'bot.state.'.$event, 'bot.state.', $default);
+        return val($event, $meta);
     }
 
     /**
