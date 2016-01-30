@@ -122,3 +122,27 @@ class ShwaipbotPlugin extends Gdn_Plugin {
     }
 }
 ```
+
+## Changelog
+
+### 1.3 (Next)
+
+* Add timed events.
+
+### 1.2 (Jan 2016)
+
+* Add `online()`, `randomize()`, `state()`, and `setState()` to Bot.
+* Make `say()` & `setReply()` chainable.
+* Fix `replyDisable()`.
+* Make `match()` case insensitive.
+
+### 1.1 (Aug 2015)
+
+* Add `afterSay` event.
+* Fix setting `context`, `body`, and `format`.
+* Add 'botID()`.
+* Remove `fireReply()` mechanism (just use normal events instead).
+
+### 1.0 (Aug 2015)
+
+* Initial release.
