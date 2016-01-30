@@ -8,13 +8,13 @@
  */
 
 $PluginInfo['bot'] = array(
-	'Name' => 'Bot',
-	'Description' => 'Program your own bot to reply to catch phrases and special conditions.',
-	'Version' 	=> '1.2',
-	'MobileFriendly' => true,
-	'Author' => "Lincoln Russell",
-	'AuthorEmail' => 'lincoln@icrontic.com',
-	'AuthorUrl' => 'http://lincolnwebs.com',
+    'Name' => 'Bot',
+    'Description' => 'Program your own bot to reply to catch phrases and special conditions.',
+    'Version' => '1.2',
+    'MobileFriendly' => true,
+    'Author' => "Lincoln Russell",
+    'AuthorEmail' => 'lincoln@icrontic.com',
+    'AuthorUrl' => 'http://lincolnwebs.com',
     'License' => 'GNU GPL2'
 );
 
@@ -24,13 +24,13 @@ $PluginInfo['bot'] = array(
  */
 class BotPlugin extends Gdn_Plugin {
 
-	/**
-	 * Bot replies to new comments.
+    /**
+     * Bot replies to new comments.
      *
      * @param PostController $sender
      * @param array $args
-	 */
-	public function postController_afterCommentSave_handler($sender, $args) {
+     */
+    public function postController_afterCommentSave_handler($sender, $args) {
         if (!val('Editing', $args)) {
             $post = val('Comment', $args);
             $bot = new Bot();
@@ -40,15 +40,15 @@ class BotPlugin extends Gdn_Plugin {
             $bot->body(val('Body', $post));
             $this->doReplies($bot);
         }
-	}
+    }
 
-	/**
-	 * Bot replies to new discussions.
+    /**
+     * Bot replies to new discussions.
      *
      * @param PostController $sender
      * @param array $args
-	 */
-	public function postController_afterDiscussionSave_handler($sender, $args) {
+     */
+    public function postController_afterDiscussionSave_handler($sender, $args) {
         if (!val('Editing', $args)) {
             $post = val('Discussion', $args);
             $bot = new Bot();
@@ -58,9 +58,9 @@ class BotPlugin extends Gdn_Plugin {
             $bot->body(val('Body', $post));
             $this->doReplies($bot);
         }
-	}
+    }
 
-	/**
+    /**
      * Hook into the asyncronous analytics tick event to create a virtual cron job.
      *
      * Requires that memcached is installed with PHP and is configured & enabled in Vanilla.
@@ -104,7 +104,7 @@ class BotPlugin extends Gdn_Plugin {
         }
     }
 
-	/**
+    /**
      * Figure out something clever to say.
      *
      * @param Bot

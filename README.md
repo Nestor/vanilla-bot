@@ -110,15 +110,15 @@ class ShwaipbotPlugin extends Gdn_Plugin {
      * Just do structure.
      */
     public function setup() {
-	     $this->structure();
+        $this->structure();
     }
 
     /**
      * Register replies.
      */
     public function structure() {
-		  botReply('shave');
-		  botReply('sendBeer');
+        botReply('shave');
+        botReply('sendBeer');
     }
 }
 ```
