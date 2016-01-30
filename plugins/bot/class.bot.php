@@ -133,6 +133,53 @@ class Bot extends Gdn_Plugin {
     }
 
     /**
+     * Show Bot as online (via Who's Online).
+     *
+     * @return Bot
+     */
+    public function online() {
+        if (!class_exists('WhosOnlinePlugin')) {
+            return;
+        }
+        $now = Gdn_Format::toDateTime();
+        $px = Gdn::sql()->Database->DatabasePrefix;
+        $botID = $this->botID();
+        $sql = "insert {$px}Whosonline (UserID, Timestamp, Invisible) values ({$botID}, :Timestamp, :Invisible)
+            on duplicate key update Timestamp = :Timestamp1, Invisible = :Invisible1";
+        Gdn::database()->query($sql, array(':Timestamp' => $now, ':Invisible' => 0, ':Timestamp1' => $now, ':Invisible1' => 0));
+        return $this;
+    }
+
+    /**
+     * Randomize a reply from a list ($options).
+     *
+     * This is better than just using rand, because we track previous answers and avoid repeats.
+     * 70% of possible answers will be stored as a "no repeat" log that cycles.
+     *
+     * @param string $event Slug.
+     * @param array $options Numeric array of string replies.
+     * @return string Reply.
+     */
+    public function randomize($event, $options) {
+        // Get what he's said recently
+        $previous = $this->state($event, array());
+        $total = count($options);
+        // Always make sure 30% isn't in the log so it's selectable.
+        $limit = round($total * .7);
+
+        // Randomize an option, but skip recently used ones.
+        do {
+            $get = rand(0, $total-1);
+        } while (in_array($get, $previous));
+
+        // Store what we chose & say it.
+        $previous = array_merge(array($get), array_slice($previous, 0, $limit));
+        $this->setState($event, $previous);
+
+        return val($get, $options);
+    }
+
+    /**
      * Do a regex match on the body.
      *
      * @param string $pattern Regex pattern.
@@ -145,6 +192,8 @@ class Bot extends Gdn_Plugin {
 
     /**
      * Save the current reply as a new comment in the discussion.
+     *
+     * @return Bot
      */
     public function say() {
         if ($this->reply && $this->reply !== true) {
@@ -158,6 +207,7 @@ class Bot extends Gdn_Plugin {
             $commentModel->save($botComment);
         }
         $this->fireEvent('afterSay');
+        return $this;
     }
 
     /**
@@ -166,9 +216,38 @@ class Bot extends Gdn_Plugin {
      * Set to `true` to have no reply at all and skip further reply checks.
      *
      * @param string $reply Fully formatted post in set format.
+     * @return Bot
      */
     public function setReply($reply) {
         $this->reply = ($reply !== true) ? (string) $reply : true;
+        return $this;
+    }
+
+    /**
+     * Set a state/value into the database.
+     *
+     * @param $event Slug. 50 characters max. Avoid spaces.
+     * @param null $value
+     * @param int $userid
+     * @return Bot
+     */
+    public function setState($event, $value = null, $userid = 0) {
+        $event = substr(strolower($event), 0, 50);
+        Gdn::userModel()->setMeta($userid, array($event => $value), 'bot.state.');
+        return $this;
+    }
+
+    /**
+     * Get a state/value in the database.
+     *
+     * @param $event Slug. 50 characters max. Avoid spaces.
+     * @param $default Default value to return if none is set.
+     * @param int $userid Use zero for global states.
+     * @return int|string|bool
+     */
+    public function state($event, $default = null, $userid = 0) {
+        $event = substr(strolower($event), 0, 50);
+        return Gdn::userModel()->getMeta($userid, $event, 'bot.state.', $default);
     }
 
     /**
