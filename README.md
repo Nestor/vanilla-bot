@@ -48,6 +48,14 @@ There's some data & convenience formatting available to you when crafting your r
 
 Your reply handler should return a fully formatted string of the post you want the bot to reply with. By defaut, Bot expects Markdown. You can change this with `format($newFormat)`.
 
+## Bot tricks
+
+Bot has a few second-tier capabilities as of 1.2.
+
+* `randomize()` lets you pick a random reply from a list without repeating yourself too soon.
+* `state()` and `getState()` let you pull off multi-step actions by "remembering" where you are in a sequence.
+* `online()` will make your bot user appear online (if you're also using the [Who's Online](https://vanillaforums.org/addon/whosonline-plugin) plugin).
+* Some commands are now chainable: `$bot->setState()->setReply()->say()->online();`
 
 ## Design considerations
 
