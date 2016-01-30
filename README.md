@@ -135,9 +135,12 @@ class ShwaipbotPlugin extends Gdn_Plugin {
 
 ## Changelog
 
-### 1.3 (Next)
+### 1.3 (Jan 2016)
 
 * Add timed events.
+* Fix botID() param type.
+* Add this changelog.
+* Add GitHub repo to plugin info.
 
 ### 1.2 (Jan 2016)
 
