@@ -55,12 +55,12 @@ class Bot extends Gdn_Plugin {
     /**
      * What's the userid of our bot?
      *
-     * @param string $body Set the botid (optional).
+     * @param int $botID Set the botid (optional).
      * @return int Current botid.
      */
-    public function botID($botID = '') {
-        if ($botID != '') {
-            $this->botID = (string) $botID;
+    public function botID($botID = null) {
+        if (!is_null($botID)) {
+            $this->botID = (int) $botID;
         }
         return $this->botID;
     }
