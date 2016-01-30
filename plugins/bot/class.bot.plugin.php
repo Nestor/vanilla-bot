@@ -76,6 +76,7 @@ class BotPlugin extends Gdn_Plugin {
             // If that event set a reply, let's move on.
             if ($bot->hasReply()) {
                 $bot->say();
+                break;
             }
         }
     }
