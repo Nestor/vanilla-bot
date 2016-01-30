@@ -8,7 +8,7 @@
 $PluginInfo['bot'] = array(
 	'Name' => 'Bot',
 	'Description' => 'Program your own bot to reply to catch phrases and special conditions.',
-	'Version' 	=> '1.1',
+	'Version' 	=> '1.2',
 	'MobileFriendly' => true,
 	'Author' => "Lincoln Russell",
 	'AuthorEmail' => 'lincoln@icrontic.com',
@@ -23,6 +23,9 @@ class BotPlugin extends Gdn_Plugin {
 
 	/**
 	 * Bot replies to new comments.
+     *
+     * @param PostController $sender
+     * @param array $args
 	 */
 	public function postController_afterCommentSave_handler($sender, $args) {
         if (!val('Editing', $args)) {
@@ -38,6 +41,9 @@ class BotPlugin extends Gdn_Plugin {
 
 	/**
 	 * Bot replies to new discussions.
+     *
+     * @param PostController $sender
+     * @param array $args
 	 */
 	public function postController_afterDiscussionSave_handler($sender, $args) {
         if (!val('Editing', $args)) {
@@ -54,7 +60,7 @@ class BotPlugin extends Gdn_Plugin {
 	/**
      * Figure out something clever to say.
      *
-     * @param Bot $bot
+     * @param Bot
      */
     public function doReplies($bot) {
         // Get all replies that have been registered.
@@ -70,23 +76,17 @@ class BotPlugin extends Gdn_Plugin {
             // If that event set a reply, let's move on.
             if ($bot->hasReply()) {
                 $bot->say();
-                return true;
             }
         }
     }
-
-    /**
-     * No setup.
-     */
-    public function setup() { }
 }
 
 if (!function_exists('botReply')) :
 /**
  * Add a reply to the call stack.
  *
- * @param $name
- * @param $priority
+ * @param string $eventName Slug.
+ * @param int|bool $priority
  */
 function botReply($eventName, $priority = false) {
     // If no priority is set, automatically increment it in the order received.
@@ -110,9 +110,9 @@ if (!function_exists('botReplyDisable')) :
 /**
  * Unregister a reply event.
  *
- * @param $eventName
+ * @param string $eventName
  */
 function botReplyDisable($eventName) {
-    Gdn::set('bot.replies.'.$eventName, null);
+    Gdn::userModel()->setMeta(0, array($eventName => null), 'bot.replies.');
 }
 endif;
