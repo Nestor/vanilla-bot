@@ -133,12 +133,12 @@ class ShwaipbotPlugin extends Gdn_Plugin {
 }
 ```
 
-## Changelog
+## History
 
 ### 1.3 (Jan 2016)
 
 * Add timed events.
-* Fix botID() param type.
+* Fix `botID()` param type.
 * Add this changelog.
 * Add GitHub repo to plugin info.
 
@@ -153,9 +153,13 @@ class ShwaipbotPlugin extends Gdn_Plugin {
 
 * Add `afterSay` event.
 * Fix setting `context`, `body`, and `format`.
-* Add 'botID()`.
+* Add `botID()`.
 * Remove `fireReply()` mechanism (just use normal events instead).
 
 ### 1.0 (Aug 2015)
 
 * Initial release.
+
+**This project began in 2013** as a plugin for [Icrontic](https://icrontic.com) named _shwaipbot_. The initial release for Bot was created by abstracting the high-level functionality out of _shwaipbot_ and turning it into an implementation of Bot instead.
+
+The bot Vorgo on [vanillaforums.org](https://vanillaforums.org) has also run on this framework since the initial release.
