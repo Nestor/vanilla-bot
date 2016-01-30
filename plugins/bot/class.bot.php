@@ -40,49 +40,12 @@ class Bot extends Gdn_Plugin {
     }
 
     /**
-     * Formatted mention of user we're interacting with.
-     *
-     * @return Mention of the user who triggered this.
-     */
-    public function mention() {
-        return '@'.val('Name', $this->user);
-    }
-
-    /**
-     * Do a regex match on the body.
-     *
-     * @param string $pattern Regex pattern.
-     * @param array $matches See preg_match().
-     * @return bool Whether trigger text matches $Pattern.
-     */
-    public function regex($pattern, &$matches = array()) {
-        return (preg_match('/'.$pattern.'/i', $this->body, $matches));
-    }
-
-    /**
-     * Go on, say it.
-     */
-    public function say() {
-        if ($this->reply && $this->reply !== true) {
-            $commentModel = new CommentModel();
-            $botComment = array(
-                'DiscussionID' => val('DiscussionID', $this->discussion),
-                'InsertUserID' => $this->botID,
-                'Format' => $this->format,
-                'Body' => $this->reply
-            );
-            $commentModel->save($botComment);
-        }
-        $this->fireEvent('afterSay');
-    }
-
-    /**
      * What was said?
      *
      * @param string $body Set the post body for reference (optional).
      * @return Content of post that triggered this.
      */
-    public function body($body = '', $format = '') {
+    public function body($body = '') {
         if ($body != '') {
             $this->body = (string) $body;
         }
@@ -142,6 +105,62 @@ class Bot extends Gdn_Plugin {
     }
 
     /**
+     * Whether a reply has been set by a bot reply handler.
+     *
+     * @return bool Whether a reply has been set.
+     */
+    public function hasReply() {
+        return ($this->reply !== false) ? true : false;
+    }
+
+    /**
+     * Do a simple text match on the body.
+     *
+     * @param string $text Text to match.
+     * @return bool Whether trigger text contains $Text.
+     */
+    public function match($text) {
+        return (strpos(strtolower($this->body), strtolower($text)) !== false);
+    }
+
+    /**
+     * Formatted mention of user we're interacting with.
+     *
+     * @return Mention of the user who triggered this.
+     */
+    public function mention() {
+        return '@'.val('Name', $this->user);
+    }
+
+    /**
+     * Do a regex match on the body.
+     *
+     * @param string $pattern Regex pattern.
+     * @param array $matches See preg_match().
+     * @return bool Whether trigger text matches $Pattern.
+     */
+    public function regex($pattern, &$matches = array()) {
+        return (preg_match('/'.$pattern.'/i', $this->body, $matches));
+    }
+
+    /**
+     * Save the current reply as a new comment in the discussion.
+     */
+    public function say() {
+        if ($this->reply && $this->reply !== true) {
+            $commentModel = new CommentModel();
+            $botComment = array(
+                'DiscussionID' => val('DiscussionID', $this->discussion),
+                'InsertUserID' => $this->botID,
+                'Format' => $this->format,
+                'Body' => $this->reply
+            );
+            $commentModel->save($botComment);
+        }
+        $this->fireEvent('afterSay');
+    }
+
+    /**
      * What are we gonna say?
      *
      * Set to `true` to have no reply at all and skip further reply checks.
@@ -150,15 +169,6 @@ class Bot extends Gdn_Plugin {
      */
     public function setReply($reply) {
         $this->reply = ($reply !== true) ? (string) $reply : true;
-    }
-
-    /**
-     * Whether a reply has been set by a bot reply handler.
-     *
-     * @return bool Whether a reply has been set.
-     */
-    public function hasReply() {
-        return ($this->reply !== false) ? true : false;
     }
 
     /**
@@ -172,15 +182,5 @@ class Bot extends Gdn_Plugin {
             $this->user = (array) $user;
         }
         return $this->user;
-    }
-
-    /**
-     * Do a simple text match on the body.
-     *
-     * @param string $text Text to match.
-     * @return bool Whether trigger text contains $Text.
-     */
-    public function match($text) {
-        return (strpos(strtolower($this->body), strtolower($text)) !== false);
     }
 }
