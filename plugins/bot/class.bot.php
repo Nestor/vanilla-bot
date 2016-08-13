@@ -8,7 +8,7 @@
 /**
  * Class Bot
  */
-class Bot {
+class Bot extends Gdn_Plugin {
 
     /** @var array Discussion we're in. */
     protected $discussion;
@@ -263,8 +263,7 @@ class Bot {
             $commentModel->save($botComment);
         }
 
-        Gdn::pluginManager()->EventArguments['Bot'] =& $this;
-        Gdn::pluginManager()->fireAs('Bot')->fireEvent('afterSay');
+        $this->fireEvent('afterSay');
 
         return $this;
     }

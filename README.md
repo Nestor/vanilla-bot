@@ -87,7 +87,7 @@ $PluginInfo['shwaipbot'] = array(
    'Version' => '1.0',
    'RequiredApplications' => array('Vanilla' => '2.2'),
    'RequiredPlugins' => array('Bot' => '1.0'),
-   'MobileFriendly' => TRUE,
+   'MobileFriendly' => true,
    'Author' => "Lincoln Russell",
 );
 
@@ -140,7 +140,6 @@ class ShwaipbotPlugin extends Gdn_Plugin {
 
 * Add `adlib()` feature.
 * Add `reset()` ability to un-pollute Bot.
-* Remove Bot extension of Gdn_Plugin.
 * Automatically show Bot online when it speaks.
 
 ### 1.3 (Jan 2016)
