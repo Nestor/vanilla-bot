@@ -169,14 +169,14 @@ class Bot extends Gdn_Plugin {
 
         // Randomize an option, but skip recently used ones.
         do {
-            $get = rand(0, $total-1);
-        } while (in_array($get, $previous));
+            $selected = rand(0, $total-1);
+        } while (in_array($selected, $previous));
 
         // Store what we chose & say it.
-        $previous = array_merge(array($get), array_slice($previous, 0, $limit));
+        $previous = array_merge(array($selected), array_slice($previous, 0, $limit));
         $this->setState($event, $previous);
 
-        return val($get, $options);
+        return val($selected, $options);
     }
 
     /**
