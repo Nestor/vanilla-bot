@@ -50,11 +50,12 @@ Your reply handler should return a fully formatted string of the post you want t
 
 ## Bot tricks
 
-Bot has a few second-tier capabilities as of 1.2.
+Bot has a few second-tier capabilities as of 1.2 and beyond.
 
 * `randomize()` lets you pick a random reply from a list without repeating yourself too soon.
 * `state()` and `getState()` let you pull off multi-step actions by "remembering" where you are in a sequence.
 * `online()` will make your bot user appear online (if you're also using the [Who's Online](https://vanillaforums.org/addon/whosonline-plugin) plugin).
+* `adlib()` will build a Mad Lib from the template and options passed to it.
 * Some commands are now chainable: `$bot->setState()->setReply()->say()->online();`
 
 ## Timed events
@@ -134,6 +135,13 @@ class ShwaipbotPlugin extends Gdn_Plugin {
 ```
 
 ## History
+
+### 1.4 (Aug 2016)
+
+* Add `adlib()` feature.
+* Add `reset()` ability to un-pollute Bot.
+* Remove Bot extension of Gdn_Plugin.
+* Automatically show Bot online when it speaks.
 
 ### 1.3 (Jan 2016)
 

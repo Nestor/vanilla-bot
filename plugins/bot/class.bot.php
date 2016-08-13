@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright 2015 Lincoln Russell
+ * @copyright 2015-2016 Lincoln Russell
  * @license GNU GPL2
  * @package Bot
  */
@@ -8,35 +8,74 @@
 /**
  * Class Bot
  */
-class Bot extends Gdn_Plugin {
+class Bot {
 
     /** @var array Discussion we're in. */
-    protected $discussion = array();
+    protected $discussion;
 
     /** @var array User who triggered this mess. */
-    protected $user = array();
+    protected $user;
 
     /** @var int Our loveable bot's UserID. */
-    protected $botID = 0;
+    protected $botID;
 
     /** @var string What was said? */
-    protected $body = '';
+    protected $body;
 
     /** @var string What triggered this? */
-    protected $context = 'comment';
+    protected $context;
 
     /** @var string What do we say back? */
-    protected $reply = false;
+    protected $reply;
 
     /** @var string What do we say back? */
-    protected $format = 'Markdown';
+    protected $format;
 
     /**
      * First positions.
      */
     public function __construct() {
         parent::__construct();
-        $this->botID = c('Bot.UserID', Gdn::userModel()->getSystemUserID());
+        $this->reset();
+    }
+
+    /**
+     * Randomly substitute parts of speech into a phrase template, just like Mad Libs.
+     *
+     * Each individual selection is run thru `randomize()` to reduce duplicate output.
+     * It would be extremely foolhardy to pass user-generated content into this method.
+     * Only {keys} appearing in the $options array will be substituted.
+     *
+     * @example $template = "Did you {get} the latest {software}? It {fixes} your {system} like magic!";
+     *    $options = [
+     *       'get' = ['download', 'compile', 'grab', 'build', 'get'],
+     *       'software' = ['defragger', 'framework', 'antivirus'],
+     *       'fixes' = ['destroys', 'rebuilds', 'fixes'],
+     *       'system' = ['operating system', 'project', 'tea pot']
+     *    ];
+     *    Possible outcome: "Did you build the latest framework? It destroys your tea pot like magic!"
+     *
+     * @param string $template The phrase to be completed by substituting random words.
+     * @param array $options Words or phrases to select from in format: [substitution key] => [A, B, C].
+     *     The substitution key is not used as a possible selection. Use short, alphanumeric keys.
+     * @return string The completed ad-lib.
+     */
+    public function adlib($template, $options) {
+        // Input validation.
+        if (!is_string($template) || !is_array($options)) {
+            return;
+        }
+
+        $result = $template;
+        foreach ($options as $key => $suboptions) {
+            // Build a nice cache key.
+            $state = 'adlib-'.substr(md5($template), 0, 5).'-'.$key;
+            // Build a nicely randomized adlib.
+            $selected = $this->randomize($state, $suboptions);
+            $result = str_replace('{'.$key.'}', $selected, $result);
+        }
+
+        return $result;
     }
 
     /**
@@ -191,6 +230,23 @@ class Bot extends Gdn_Plugin {
     }
 
     /**
+     * Reset the bot.
+     *
+     * @return Bot
+     */
+    public function reset() {
+        $this->discussion = [];
+        $this->user = [];
+        $this->body = '';
+        $this->context = 'comment';
+        $this->reply = false;
+        $this->format = 'Markdown';
+        $this->botID = c('Bot.UserID', Gdn::userModel()->getSystemUserID());
+
+        return $this;
+    }
+
+    /**
      * Save the current reply as a new comment in the discussion.
      *
      * @return Bot
@@ -206,7 +262,10 @@ class Bot extends Gdn_Plugin {
             );
             $commentModel->save($botComment);
         }
-        $this->fireEvent('afterSay');
+
+        Gdn::pluginManager()->EventArguments['Bot'] =& $this;
+        Gdn::pluginManager()->fireAs('Bot')->fireEvent('afterSay');
+
         return $this;
     }
 

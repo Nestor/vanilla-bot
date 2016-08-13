@@ -10,7 +10,7 @@
 $PluginInfo['bot'] = array(
     'Name' => 'Bot',
     'Description' => 'Program your own bot to reply to catch phrases and special conditions.',
-    'Version' => '1.3',
+    'Version' => '1.4',
     'MobileFriendly' => true,
     'Author' => "Lincoln Russell",
     'AuthorEmail' => 'lincoln@icrontic.com',
@@ -58,6 +58,20 @@ class BotPlugin extends Gdn_Plugin {
             $bot->user(userBuilder($post, 'Insert'));
             $bot->body(val('Body', $post));
             $this->doReplies($bot);
+        }
+    }
+
+    /**
+     * Have the Bot appear online when it speaks.
+     *
+     * You can set Bot.Online.AfterSay = false in your config to disable this feature.
+     *
+     * @param PluginManager $sender
+     * @param array $args
+     */
+    public function bot_afterSay_handler($sender, $args) {
+        if (c('Bot.Online.AfterSay', true)) {
+            $args['Bot']->online();
         }
     }
 
